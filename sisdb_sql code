@@ -1,0 +1,398 @@
+
+-- 1. Create Database
+CREATE DATABASE SISDB;
+USE SISDB;
+
+-- 2. Create Tables with Constraints
+
+-- Students Table
+CREATE TABLE Students (
+    student_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone_number VARCHAR(15)
+);
+
+-- Teacher Table
+CREATE TABLE Teacher (
+    teacher_id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL
+);
+
+-- Courses Table
+CREATE TABLE Courses (
+    course_id INT PRIMARY KEY AUTO_INCREMENT,
+    course_name VARCHAR(100) NOT NULL,
+    credits INT NOT NULL,
+    teacher_id INT,
+    FOREIGN KEY (teacher_id) REFERENCES Teacher(teacher_id)
+);
+
+-- Enrollments Table
+CREATE TABLE Enrollments (
+    enrollment_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    course_id INT,
+    enrollment_date DATE NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id) ON DELETE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES Courses(course_id)
+);
+
+-- Payments Table
+CREATE TABLE Payments (
+    payment_id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT,
+    amount DECIMAL(10,2) NOT NULL,
+    payment_date DATE NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES Students(student_id) ON DELETE CASCADE
+);
+
+-- 5. Insert Sample Records
+
+-- Students (10 records)
+INSERT INTO Students (first_name, last_name, date_of_birth, email, phone_number) VALUES
+('Alice', 'Smith', '2000-01-15', 'alice.smith@email.com', '555-0101'),
+('Bob', 'Johnson', '1999-03-22', 'bob.johnson@email.com', '555-0102'),
+('Carol', 'Williams', '2001-05-10', 'carol.w@email.com', '555-0103'),
+('David', 'Brown', '2000-07-18', 'david.brown@email.com', '555-0104'),
+('Emma', 'Davis', '1998-09-25', 'emma.davis@email.com', '555-0105'),
+('Frank', 'Miller', '2001-11-30', 'frank.miller@email.com', '555-0106'),
+('Grace', 'Wilson', '1999-02-14', 'grace.wilson@email.com', '555-0107'),
+('Henry', 'Taylor', '2000-04-05', 'henry.taylor@email.com', '555-0108'),
+('Isabella', 'Anderson', '2001-06-20', 'isabella.a@email.com', '555-0109'),
+('James', 'Thomas', '1998-08-12', 'james.thomas@email.com', '555-0110');
+
+-- Teacher (10 records)
+INSERT INTO Teacher (first_name, last_name, email) VALUES
+('Robert', 'Lee', 'robert.lee@school.com'),
+('Sarah', 'Clark', 'sarah.clark@school.com'),
+('Michael', 'Adams', 'michael.adams@school.com'),
+('Jennifer', 'White', 'jennifer.white@school.com'),
+('Thomas', 'Green', 'thomas.green@school.com'),
+('Lisa', 'Martin', 'lisa.martin@school.com'),
+('William', 'Hall', 'william.hall@school.com'),
+('Emily', 'Turner', 'emily.turner@school.com'),
+('Charles', 'King', 'charles.king@school.com'),
+('Mary', 'Wright', 'mary.wright@school.com');
+
+-- Courses (10 records)
+INSERT INTO Courses (course_name, credits, teacher_id) VALUES
+('Mathematics 101', 3, 1),
+('Physics 101', 4, 2),
+('Computer Science 101', 3, 3),
+('English Literature', 3, 4),
+('Chemistry 101', 4, 5),
+('History 101', 3, 6),
+('Biology 101', 4, 7),
+('Psychology 101', 3, 8),
+('Economics 101', 3, 9),
+('Art History', 3, 10);
+
+-- Enrollments (10 records)
+INSERT INTO Enrollments (student_id, course_id, enrollment_date) VALUES
+(1, 1, '2025-01-10'),
+(2, 2, '2025-01-10'),
+(3, 3, '2025-01-11'),
+(4, 4, '2025-01-11'),
+(5, 5, '2025-01-12'),
+(6, 6, '2025-01-12'),
+(7, 7, '2025-01-13'),
+(8, 8, '2025-01-13'),
+(9, 9, '2025-01-14'),
+(10, 10, '2025-01-14');
+
+-- Payments (10 records)
+INSERT INTO Payments (student_id, amount, payment_date) VALUES
+(1, 500.00, '2025-01-15'),
+(2, 600.00, '2025-01-15'),
+(3, 450.00, '2025-01-16'),
+(4, 400.00, '2025-01-16'),
+(5, 550.00, '2025-01-17'),
+(6, 450.00, '2025-01-17'),
+(7, 500.00, '2025-01-18'),
+(8, 400.00, '2025-01-18'),
+(9, 450.00, '2025-01-19'),
+(10, 500.00, '2025-01-19');
+
+-- TASK 2
+-- 1. Insert a new student
+INSERT INTO Students (first_name, last_name, date_of_birth, email, phone_number)
+VALUES ('John', 'Doe', '1995-08-15', 'john.doe@example.com', '1234567890');
+
+-- 2. Enroll a student in a course
+-- Let's enroll student_id 1 in course_id 2
+INSERT INTO Enrollments (student_id, course_id, enrollment_date)
+VALUES (1, 2, '2025-03-27');  -- Using current date: March 27, 2025
+
+-- 3. Update a teacher's email
+-- Update teacher_id 1's email
+UPDATE Teacher 
+SET email = 'robert.lee.new@school.com'
+WHERE teacher_id = 1;
+
+-- 4. Delete a specific enrollment
+-- Delete enrollment of student_id 1 in course_id 2
+DELETE FROM Enrollments 
+WHERE student_id = 1 AND course_id = 2;
+
+-- 5. Assign a teacher to a course
+-- Assign teacher_id 2 to course_id 3
+UPDATE Courses 
+SET teacher_id = 2
+WHERE course_id = 3;
+
+-- 6. Delete a student and their enrollments
+-- Delete student_id 5 (cascading delete will remove their enrollments)
+DELETE FROM Students 
+WHERE student_id = 5;
+
+-- 7. Update a payment amount
+-- Update payment_id 1's amount
+UPDATE Payments 
+SET amount = 550.00
+WHERE payment_id = 1;
+
+-- TASK 3
+
+-- 1. Total payments made by a specific student (student_id 1)
+SELECT 
+    s.first_name,
+    s.last_name,
+    SUM(p.amount) as total_payments
+FROM Students s
+JOIN Payments p ON s.student_id = p.student_id
+WHERE s.student_id = 1
+GROUP BY s.student_id, s.first_name, s.last_name;
+
+-- 2. List of courses with enrollment count
+SELECT 
+    c.course_name,
+    COUNT(e.student_id) as enrollment_count
+FROM Courses c
+LEFT JOIN Enrollments e ON c.course_id = e.course_id
+GROUP BY c.course_id, c.course_name
+ORDER BY enrollment_count DESC;
+
+-- 3. Students not enrolled in any course
+SELECT 
+    s.first_name,
+    s.last_name
+FROM Students s
+LEFT JOIN Enrollments e ON s.student_id = e.student_id
+WHERE e.student_id IS NULL;
+
+-- 4. Students and their enrolled courses
+SELECT 
+    s.first_name,
+    s.last_name,
+    c.course_name
+FROM Students s
+JOIN Enrollments e ON s.student_id = e.student_id
+JOIN Courses c ON e.course_id = c.course_id
+ORDER BY s.last_name, s.first_name;
+
+-- 5. Teachers and their assigned courses
+SELECT 
+    t.first_name,
+    t.last_name,
+    c.course_name
+FROM Teacher t
+LEFT JOIN Courses c ON t.teacher_id = c.teacher_id
+ORDER BY t.last_name, t.first_name;
+
+-- 6. Students and enrollment dates for a specific course (course_id 1)
+SELECT 
+    s.first_name,
+    s.last_name,
+    e.enrollment_date
+FROM Students s
+JOIN Enrollments e ON s.student_id = e.student_id
+JOIN Courses c ON e.course_id = c.course_id
+WHERE c.course_id = 1
+ORDER BY e.enrollment_date;
+
+-- 7. Students who haven't made payments
+SELECT 
+    s.first_name,
+    s.last_name
+FROM Students s
+LEFT JOIN Payments p ON s.student_id = p.student_id
+WHERE p.student_id IS NULL;
+
+-- 8. Courses with no enrollments
+SELECT 
+    c.course_name
+FROM Courses c
+LEFT JOIN Enrollments e ON c.course_id = e.course_id
+WHERE e.course_id IS NULL;
+
+-- 9. Students enrolled in more than one course
+SELECT 
+    s.first_name,
+    s.last_name,
+    COUNT(e.course_id) as course_count
+FROM Students s
+JOIN Enrollments e ON s.student_id = e.student_id
+GROUP BY s.student_id, s.first_name, s.last_name
+HAVING COUNT(e.course_id) > 1
+ORDER BY course_count DESC;
+
+-- 10. Teachers not assigned to any courses
+SELECT 
+    t.first_name,
+    t.last_name
+FROM Teacher t
+LEFT JOIN Courses c ON t.teacher_id = c.teacher_id
+WHERE c.course_id IS NULL;
+
+-- task 4
+-- 1. Average number of students per course
+SELECT AVG(enrollment_count) as avg_students_per_course
+FROM (
+    SELECT 
+        c.course_id,
+        COUNT(e.student_id) as enrollment_count
+    FROM Courses c
+    LEFT JOIN Enrollments e ON c.course_id = e.course_id
+    GROUP BY c.course_id
+) as course_enrollments;
+
+-- 2. Student(s) with highest payment
+SELECT 
+    s.first_name,
+    s.last_name,
+    p.amount
+FROM Students s
+JOIN Payments p ON s.student_id = p.student_id
+WHERE p.amount = (SELECT MAX(amount) FROM Payments);
+
+-- 3. Courses with highest enrollment count
+SELECT 
+    c.course_name,
+    COUNT(e.student_id) as enrollment_count
+FROM Courses c
+LEFT JOIN Enrollments e ON c.course_id = e.course_id
+GROUP BY c.course_id, c.course_name
+HAVING COUNT(e.student_id) = (
+    SELECT COUNT(student_id)
+    FROM Enrollments
+    GROUP BY course_id
+    ORDER BY COUNT(student_id) DESC
+    LIMIT 1
+);
+
+-- 4. Total payments by teacher
+SELECT 
+    t.first_name,
+    t.last_name,
+    (
+        SELECT SUM(p.amount)
+        FROM Payments p
+        JOIN Enrollments e ON p.student_id = e.student_id
+        JOIN Courses c2 ON e.course_id = c2.course_id
+        WHERE c2.teacher_id = t.teacher_id
+    ) as total_payments
+FROM Teacher t;
+
+-- 5. Students enrolled in all courses
+SELECT 
+    s.first_name,
+    s.last_name
+FROM Students s
+WHERE (
+    SELECT COUNT(*)
+    FROM Courses
+) = (
+    SELECT COUNT(*)
+    FROM Enrollments e
+    WHERE e.student_id = s.student_id
+);
+
+-- 6. Teachers with no course assignments (using subquery)
+SELECT 
+    t.first_name,
+    t.last_name
+FROM Teacher t
+WHERE t.teacher_id NOT IN (
+    SELECT teacher_id
+    FROM Courses
+    WHERE teacher_id IS NOT NULL
+);
+
+-- 7. Average age of students
+SELECT AVG(student_age) as avg_age
+FROM (
+    SELECT 
+        TIMESTAMPDIFF(YEAR, date_of_birth, CURDATE()) as student_age
+    FROM Students
+) as ages;
+
+-- 8. Courses with no enrollments (using subquery)
+SELECT 
+    course_name
+FROM Courses
+WHERE course_id NOT IN (
+    SELECT course_id
+    FROM Enrollments
+);
+
+-- 9. Total payments per student per course
+SELECT 
+    s.first_name,
+    s.last_name,
+    c.course_name,
+    (
+        SELECT SUM(p.amount)
+        FROM Payments p
+        WHERE p.student_id = s.student_id
+        AND EXISTS (
+            SELECT 1
+            FROM Enrollments e2
+            WHERE e2.student_id = p.student_id
+            AND e2.course_id = c.course_id
+        )
+    ) as total_payments
+FROM Students s
+JOIN Enrollments e ON s.student_id = e.student_id
+JOIN Courses c ON e.course_id = c.course_id;
+
+-- 10. Students with more than one payment
+SELECT 
+    s.first_name,
+    s.last_name
+FROM Students s
+WHERE s.student_id IN (
+    SELECT student_id
+    FROM Payments
+    GROUP BY student_id
+    HAVING COUNT(*) > 1
+);
+
+-- 11. Total payments by each student
+SELECT 
+    s.first_name,
+    s.last_name,
+    SUM(p.amount) as total_payments
+FROM Students s
+LEFT JOIN Payments p ON s.student_id = p.student_id
+GROUP BY s.student_id, s.first_name, s.last_name;
+
+-- 12. Course names with enrollment count
+SELECT 
+    c.course_name,
+    COUNT(e.student_id) as enrollment_count
+FROM Courses c
+LEFT JOIN Enrollments e ON c.course_id = e.course_id
+GROUP BY c.course_id, c.course_name
+ORDER BY enrollment_count DESC;
+
+-- 13. Average payment amount
+SELECT AVG(p.amount) as avg_payment
+FROM Students s
+JOIN Payments p ON s.student_id = p.student_id;
+
+
