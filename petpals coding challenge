@@ -258,11 +258,10 @@ FROM Pets
 WHERE PetID not IN (SELECT PetID FROM Adoption);
 
 -- Task 1.16: Retrieve Adopted Pets and Their Adopters
-SELECT p.Name AS PetName, a.Name AS AdopterName 
+SELECT p.Name AS PetName, COALESCE(a.Name, 'No Adopter') AS AdopterName
 FROM Adoption ad
 JOIN Pets p ON ad.PetID = p.PetID
-JOIN Adoptors a ON ad.AdoptorID = a.AdoptorID;
-
+LEFT JOIN Adoptors a ON ad.AdoptorID = a.AdoptorID;
 
 
 
