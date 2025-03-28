@@ -113,7 +113,7 @@ GROUP BY s.Name;
 
 
 -- Task 1.9: Retrieve Pets Without Owners
-create table if not exists owner ( ownerid int primary key auto_increment not null ,Name VARCHAR(100) NOT NULL, Age int not null, Address varchar(100) not null)
+create table if not exists owner ( ownerid int primary key auto_increment not null ,Name VARCHAR(100) NOT NULL, Age int not null, Address varchar(100) not null);
 
 INSERT INTO Owner (Name, Age, Address) VALUES
 ('John Doe', 35, '123 Main St, New York'),
@@ -291,7 +291,7 @@ FROM Shelters s
 JOIN Pets p ON s.ShelterID = p.ShelterID
 JOIN Adoption a ON p.PetID = a.PetID
 GROUP BY s.Name
-ORDER BY TotalAdoptions DESC;
+ORDER BY TotalAdoptions DESC limit 1;
 
 
 
