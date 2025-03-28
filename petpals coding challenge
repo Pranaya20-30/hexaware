@@ -1,0 +1,298 @@
+
+create database if not exists petpals ;
+use petpals;
+
+-- Task 1.2&1.3&1.4
+CREATE TABLE if not exists Pets (PetID INT  PRIMARY KEY auto_increment not null ,Name VARCHAR(100) NOT NULL,Age INT,Breed VARCHAR(100),Type VARCHAR(50),AvailableForAdoption BIT DEFAULT 1);
+CREATE TABLE if not exists  Shelters (ShelterID INT  PRIMARY KEY auto_increment not null , Name VARCHAR(100) NOT NULL, Location VARCHAR(255) NOT NULL);
+CREATE TABLE if not exists Donations (DonationID INT auto_increment PRIMARY KEY not null , DonorName VARCHAR(100), DonationType VARCHAR(50), DonationAmount DECIMAL(10,2), DonationItem VARCHAR(255), DonationDate DATETIME DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE if not exists AdoptionEvents (EventID INT auto_increment PRIMARY KEY not null, EventName VARCHAR(100) NOT NULL, EventDate DATETIME NOT NULL, Location VARCHAR(255) NOT NULL);
+CREATE TABLE if not exists Participants (ParticipantID INT auto_increment PRIMARY KEY not null, ParticipantName VARCHAR(100) NOT NULL, ParticipantType VARCHAR(50) CHECK (ParticipantType IN ('Shelter', 'Adopter')), EventID INT, FOREIGN KEY (EventID) REFERENCES AdoptionEvents(EventID));
+
+INSERT INTO Pets (Name, Age, Breed, Type, AvailableForAdoption) VALUES
+('Buddy', 3, 'Golden Retriever', 'Dog', 1),
+('Whiskers', 2, 'Persian', 'Cat', 1),
+('Max', 4, 'Labrador', 'Dog', 0),
+('Bella', 1, 'Siamese', 'Cat', 1),
+('Charlie', 5, 'Beagle', 'Dog', 0),
+('Luna', 3, 'Maine Coon', 'Cat', 1),
+('Rocky', 2, 'Bulldog', 'Dog', 1),
+('Daisy', 6, 'Poodle', 'Dog', 0),
+('Milo', 4, 'Sphynx', 'Cat', 1),
+('Coco', 1, 'Shih Tzu', 'Dog', 1);
+
+INSERT INTO Shelters (Name, Location) VALUES
+('Happy Paws Shelter', 'New York, NY'),
+('Furry Friends Rescue', 'Los Angeles, CA'),
+('Paw Haven', 'Chicago, IL'),
+('Safe Haven Animal Shelter', 'Houston, TX'),
+('Loving Tails Shelter', 'Phoenix, AZ'),
+('Hope for Paws', 'Philadelphia, PA'),
+('Rescue Me Shelter', 'San Antonio, TX'),
+('Pawfect Home', 'San Diego, CA'),
+('Second Chance Shelter', 'Dallas, TX'),
+('Forever Home Rescue', 'San Jose, CA');
+
+INSERT INTO Donations (DonorName, DonationType, DonationAmount, DonationItem, DonationDate) VALUES
+('John Smith', 'Cash', 200.00, NULL, '2024-03-15 10:30:00'),
+('Sarah Johnson', 'Item', NULL, 'Dog Food', '2024-03-16 12:45:00'),
+('David Brown', 'Cash', 150.00, NULL, '2024-03-17 14:10:00'),
+('Emma Wilson', 'Item', NULL, 'Cat Litter', '2024-03-18 09:20:00'),
+('James Taylor', 'Cash', 300.00, NULL, '2024-03-19 16:50:00'),
+('Olivia Martinez', 'Item', NULL, 'Leashes & Collars', '2024-03-20 11:30:00'),
+('William Anderson', 'Cash', 100.00, NULL, '2024-03-21 13:00:00'),
+('Sophia Thomas', 'Item', NULL, 'Pet Beds', '2024-03-22 15:40:00'),
+('Benjamin Garcia', 'Cash', 250.00, NULL, '2024-03-23 17:25:00'),
+('Ava Hernandez', 'Item', NULL, 'Toys & Treats', '2024-03-24 10:15:00');
+
+INSERT INTO AdoptionEvents (EventName, EventDate, Location) VALUES
+('Spring Pet Adoption Fair', '2024-04-10 11:00:00', 'Central Park, NY'),
+('Rescue & Rehome Event', '2024-04-15 10:00:00', 'Downtown LA, CA'),
+('Furry Friends Meet & Greet', '2024-04-20 12:00:00', 'Lincoln Park, IL'),
+('Forever Home Adoption Drive', '2024-04-25 13:00:00', 'Discovery Green, TX'),
+('Happy Tails Adoption Day', '2024-05-01 09:30:00', 'Tempe Park, AZ'),
+('Hope for Paws Day', '2024-05-05 14:00:00', 'Love Park, PA'),
+('Paws & Claws Expo', '2024-05-10 15:30:00', 'The River Walk, TX'),
+('New Beginnings Adoption Fair', '2024-05-15 10:45:00', 'Balboa Park, CA'),
+('Pet Love Adoption Fest', '2024-05-20 11:15:00', 'Klyde Warren Park, TX'),
+('Second Chances Pet Event', '2024-05-25 12:30:00', 'Almaden Lake Park, CA');
+
+INSERT INTO Participants (ParticipantName, ParticipantType, EventID) VALUES
+('Happy Paws Shelter', 'Shelter', 1),
+('Furry Friends Rescue', 'Shelter', 2),
+('Paw Haven', 'Shelter', 3),
+('Safe Haven Animal Shelter', 'Shelter', 4),
+('Loving Tails Shelter', 'Shelter', 5),
+('John Smith', 'Adopter', 1),
+('Emma Wilson', 'Adopter', 2),
+('James Taylor', 'Adopter', 3),
+('Olivia Martinez', 'Adopter', 4),
+('Sophia Thomas', 'Adopter', 5);
+
+-- Task 1.5: Retrieve Available Pets
+SELECT Name, Age, Breed, Type FROM Pets WHERE AvailableForAdoption = 0;
+
+-- Task 1.6: Retrieve Participants of Specific Adoption Event
+SELECT p.ParticipantName , e.EventName from participants p 
+join  Adoptionevents e on e.eventid = p.eventid
+where e.eventid = 3;
+
+-- Task 1.7: Stored Procedure to Update Shelter Information
+delimiter ##
+CREATE PROCEDURE UpdateShelterInfo
+    @ShelterID INT, 
+    @NewName NVARCHAR(100), 
+    @NewLocation NVARCHAR(255)
+AS
+BEGIN
+    UPDATE Shelters 
+    SET Name = @NewName, Location = @NewLocation 
+    WHERE ShelterID = @ShelterID;
+END;
+delimiter ##
+
+-- Task 1.8: Retrieve Total Donation Amount by Shelter
+
+ALTER TABLE Donations ADD COLUMN ShelterID INT NULL;
+ALTER TABLE Donations ADD CONSTRAINT fk_donations_shelter FOREIGN KEY (ShelterID) REFERENCES Shelters(ShelterID);
+
+update donations set ShelterID = 10 where donationid = 1;
+update donations set ShelterID = 9 where donationid = 2;
+update donations set ShelterID = 8 where donationid = 3;
+update donations set ShelterID = 7 where donationid = 4;
+update donations set ShelterID = 6 where donationid = 5;
+update donations set ShelterID = 5 where donationid = 6;
+update donations set ShelterID = 4 where donationid = 7;
+update donations set ShelterID = 3 where donationid = 8;
+
+--
+
+SELECT s.Name, COALESCE(SUM(d.DonationAmount), 0) AS TotalDonations 
+FROM Shelters s, Donations d where s.ShelterID = d.shelterid
+GROUP BY s.Name;
+
+
+-- Task 1.9: Retrieve Pets Without Owners
+create table if not exists owner ( ownerid int primary key auto_increment not null ,Name VARCHAR(100) NOT NULL, Age int not null, Address varchar(100) not null)
+
+INSERT INTO Owner (Name, Age, Address) VALUES
+('John Doe', 35, '123 Main St, New York'),
+('Alice Smith', 42, '456 Oak Ave, Los Angeles'),
+('Bob Johnson', 29, '789 Pine St, Chicago'),
+('Emily Davis', 50, '321 Cedar Rd, Houston'),
+('Michael Brown', 37, '654 Maple Dr, Miami'),
+('Sarah Wilson', 28, '987 Birch Ln, San Francisco'),
+('David Clark', 45, '741 Spruce Blvd, Seattle');
+
+select * from owner;
+
+ALTER TABLE Pets ADD COLUMN ownerID INT NULL;
+ALTER TABLE Pets ADD CONSTRAINT fk_Pets_owner FOREIGN KEY (ownerID) REFERENCES owner(ownerID);
+
+update pets set ownerID = 1 where Petid = 1;
+update pets set ownerID = 6 where Petid  = 2;
+update pets set ownerID  = 5 where Petid  = 3;
+update pets set ownerID  = 2 where Petid  = 4;
+update pets set ownerID  = 6 where Petid  = 5;
+update pets set ownerID  = 5 where Petid  = 6;
+update pets set ownerID  = 4 where Petid  = 7;
+update pets set ownerID  = 3 where Petid  = 8;
+
+select * from pets;
+
+select name , age , breed , type from pets where ownerid is null;
+
+
+-- Task 1.10: Retrieve Total Donation Amount by Month and Year
+SELECT  DATE_FORMAT(DonationDate, '%M %Y') AS DonationMonthYear ,SUM(DonationAmount) AS TotalAmount
+FROM Donations
+GROUP BY DATE_FORMAT(DonationDate, '%M %Y');
+
+-- Task 1.11: Retrieve Distinct Breeds of Specific Age Groups
+select distinct breed ,name , age from pets
+where age between 2 and 3
+or age > 5;
+
+
+-- Task 1.12: Retrieve Pets and Their Shelters for Adoption
+select * from pets;
+
+ALTER TABLE Pets ADD COLUMN shelterid INT NULL;
+ALTER TABLE Pets ADD CONSTRAINT fk_Pets_shelter FOREIGN KEY (shelterid) REFERENCES shelters(shelterID);
+
+update pets set shelterID = 1 where Petid = 1;
+update pets set shelterID = 6 where Petid  = 2;
+update pets set shelterID  = 5 where Petid  = 3;
+update pets set shelterID = 10 where Petid  = 4;
+update pets set shelterID = 6 where Petid  = 5;
+update pets set shelterID  = 5 where Petid  = 6;
+update pets set shelterID = 4 where Petid  = 7;
+update pets set shelterID= 3 where Petid  = 8;
+
+
+select pets.name from pets , shelters  where pets.shelterid = shelters.shelterid  and pets.Availableforadoption = 1;
+
+-- Task 1.13: Count Participants in Events by City
+
+SELECT COUNT(p.ParticipantID) AS TotalParticipants 
+FROM Participants p
+JOIN AdoptionEvents e ON p.EventID = e.EventID
+JOIN Shelters s ON p.ParticipantID = s.ShelterID
+WHERE s.Location = 'Chennai';
+ 
+ -- Task 1.14: Retrieve Unique Breeds of Pets Aged 1 to 5
+ select distinct breed from pets where age between  1 and 5;
+ 
+ 
+ -- Task 1.15: Retrieve Pets That Haven't Been Adopted
+CREATE TABLE IF NOT EXISTS Adoption (
+    AdoptionID INT PRIMARY KEY AUTO_INCREMENT,  
+    PetID INT NOT NULL,                         
+    OwnerID INT NOT NULL,                      
+    EventID INT,                                
+    CONSTRAINT fk_adoption_pet FOREIGN KEY (PetID) REFERENCES Pets(PetID) ,
+    CONSTRAINT fk_adoption_owner FOREIGN KEY (OwnerID) REFERENCES Owner(OwnerID) ,
+    CONSTRAINT fk_adoption_event FOREIGN KEY (EventID) REFERENCES AdoptionEvents(EventID) );
+    
+    
+    
+    INSERT INTO Adoption (PetID, OwnerID, EventID) VALUES
+(1, 3, 2),  
+(2, 5, NULL), 
+(3, 1, 4),
+(4, 2, 1),  
+(5, 4, NULL), 
+(6, 4, 3),  
+(7, 6, 5),  
+(8, 4, NULL), 
+(9, 5, 6),  
+(10, 6, NULL);
+
+
+    
+create table adoptors ( adoptorid int auto_increment primary key not null , name varchar(78) , address varchar(100) not null , phonenumber varchar(15) not null);
+
+INSERT INTO Adoptors (Name, Address, PhoneNumber) VALUES
+('John Doe', '123 Main St, New York', '123-456-7890'),
+('Alice Smith', '456 Oak Ave, Los Angeles', '987-654-3210'),
+('Bob Johnson', '789 Pine St, Chicago', '555-123-4567'),
+('Emily Davis', '321 Cedar Rd, Houston', '444-222-7890'),
+('Michael Brown', '654 Maple Dr, Miami', '999-888-7777'),
+('Sarah Wilson', '987 Birch Ln, San Francisco', '333-666-9999'),
+('David Clark', '741 Spruce Blvd, Seattle', '222-444-6666'),
+('Olivia Martinez', '852 Palm St, Boston', '111-222-3333'),
+('James Taylor', '963 Redwood Ave, Denver', '777-555-4444'),
+('Sophia White', '369 Magnolia Rd, Phoenix', '888-999-0000'); 
+
+
+ALTER TABLE Adoption
+ADD COLUMN AdoptorID INT,
+ADD CONSTRAINT fk_adoption_adoptor FOREIGN KEY (AdoptorID) REFERENCES Adoptors(AdoptorID);
+
+UPDATE Adoption 
+SET AdoptorID = 1 WHERE AdoptionID = 1;
+UPDATE Adoption 
+SET AdoptorID = 2 WHERE AdoptionID = 2;
+UPDATE Adoption 
+SET AdoptorID = 3 WHERE AdoptionID = 3;
+UPDATE Adoption 
+SET AdoptorID = 4 WHERE AdoptionID = 4;
+UPDATE Adoption 
+SET AdoptorID = 5 WHERE AdoptionID = 5;
+UPDATE Adoption 
+SET AdoptorID = 6 WHERE AdoptionID = 6;
+UPDATE Adoption 
+SET AdoptorID = 7 WHERE AdoptionID = 7;
+UPDATE Adoption 
+SET AdoptorID = 8 WHERE AdoptionID = 8;
+UPDATE Adoption 
+SET AdoptorID = 9 WHERE AdoptionID = 9;
+UPDATE Adoption 
+SET AdoptorID = 10 WHERE AdoptionID = 10;
+
+
+
+    
+ SELECT Name, Age, Breed, Type 
+FROM Pets 
+WHERE PetID not IN (SELECT PetID FROM Adoption);
+
+-- Task 1.16: Retrieve Adopted Pets and Their Adopters
+SELECT p.Name AS PetName, a.Name AS AdopterName 
+FROM Adoption ad
+JOIN Pets p ON ad.PetID = p.PetID
+JOIN Adoptors a ON ad.AdoptorID = a.AdoptorID;
+
+
+
+
+-- Task 1.17: Retrieve Shelters and Count of Pets Available for Adoption
+SELECT s.Name AS ShelterName, COUNT(p.PetID) AS AvailablePets 
+FROM Shelters s
+LEFT JOIN Pets p ON s.ShelterID = p.ShelterID AND p.AvailableForAdoption = 1
+GROUP BY s.Name;
+
+
+-- Task 1.18: Find Pairs of Pets with the Same Breed in the Same Shelter
+SELECT p1.Name AS Pet1, p2.Name AS Pet2, p1.Breed, s.Name AS ShelterName 
+FROM Pets p1
+JOIN Pets p2 ON p1.Breed = p2.Breed AND p1.PetID < p2.PetID
+JOIN Shelters s ON p1.ShelterID = s.ShelterID
+WHERE p1.ShelterID = p2.ShelterID;
+
+-- Task 1.19: List All Combinations of Shelters and Adoption Events
+SELECT s.Name AS ShelterName, e.EventName AS EventName 
+FROM Shelters s
+CROSS JOIN AdoptionEvents e;
+
+
+-- Task 1.20: Determine Shelter with Most Adoptions
+SELECT  s.Name AS ShelterName, COUNT(a.PetID) AS TotalAdoptions 
+FROM Shelters s
+JOIN Pets p ON s.ShelterID = p.ShelterID
+JOIN Adoption a ON p.PetID = a.PetID
+GROUP BY s.Name
+ORDER BY TotalAdoptions DESC;
+
+
+
