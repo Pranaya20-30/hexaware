@@ -32,7 +32,7 @@ public class AssetMaintenanceTest {
     	    "Updated Laptop",
     	    "Laptop",
     	    "8i998",
-    	    LocalDate.parse("2025-01-01"), // ✅ Fixed here
+    	    LocalDate.parse("2025-01-01"), 
     	    "Mumbai",
     	    "under maintenance",
     	    1
