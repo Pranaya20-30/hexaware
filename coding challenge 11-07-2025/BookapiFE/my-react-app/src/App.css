@@ -1,0 +1,21 @@
+/* App.css */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom right, #1f2937, #111827); /* Dark gradient */
+  min-height: 100vh;
+  color: #fff; /* Optional: makes text white globally */
+}
+
+/* Optional: Set form containers to stand out on dark bg */
+.form-container {
+  background-color: #fff;
+  color: #333;
+  padding: 30px;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
